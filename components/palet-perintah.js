@@ -38,10 +38,9 @@ function PaletPerintah({ children, ...props }) {
   const [isTerbuka, setIsTerbuka] = React.useState(false);
 
   // Shortcut khusus komponen PaletPerintah
-  useHotkeys("shift+p", () => setIsTerbuka(true));
-
   const tutupPaletnya = () => setIsTerbuka(false);
-  useHotkeys("esc", () => tutupPaletnya());
+  useHotkeys("esc", tutupPaletnya);
+  useHotkeys("shift+p", () => setIsTerbuka(true));
 
   return (
     <PaletContext.Provider value={{ isTerbuka, tutupPaletnya }} {...props}>
@@ -64,45 +63,53 @@ function InputPerintah() {
     refInputPerintah.current.focus();
   }, []);
 
+  function onKetikPerintah(ev) {
+    if (outputPerintah) {
+      setOutputPerintah("");
+    }
+    setInputPerintahnya(ev.target.value);
+  }
+
+  function onSubmitPerintah(ev) {
+    ev.preventDefault();
+    if (!inputPerintahnya) return;
+
+    const output = prosesPerintah(inputPerintahnya);
+    setOutputPerintah(output);
+    tutupPaletnya();
+  }
+
   return (
     <div
       className="kotak-palet-perintah"
       style={{
         position: "absolute",
-        width: "200px",
+        width: "300px",
         height: "50px",
+        padding: "0.4em",
         backgroundColor: "gray",
+        boxShadow: "2px 5px ",
       }}
     >
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!inputPerintahnya) {
-            return;
-          }
-          const output = prosesPerintah(inputPerintahnya);
-          setOutputPerintah(output);
-          tutupPaletnya();
-        }}
-      >
-        <label for="input-perintah" className="prompt">
-          &gt;
+      <form onSubmit={onSubmitPerintah}>
+        <label
+          for="input-perintah"
+          className="prompt"
+          style={{ marginRight: 15 }}
+        >
+          👉
         </label>
         <input
+          ref={refInputPerintah}
+          type="text"
+          name="perintah"
           id="input-perintah"
           className="input-perintah"
-          ref={refInputPerintah}
-          name="perintah"
-          type="text"
           placeholder="ketik perintahnya..."
           value={inputPerintahnya}
-          onChange={(ev) => {
-            if (outputPerintah) {
-              setOutputPerintah("");
-            }
-            setInputPerintahnya(ev.target.value);
-          }}
+          onChange={onKetikPerintah}
           onBlur={() => tutupPaletnya()}
+          style={{ padding: "0.6em" }}
         />
       </form>
     </div>
