@@ -93,7 +93,7 @@ function InputPerintah() {
     >
       <form onSubmit={onSubmitPerintah}>
         <label
-          for="input-perintah"
+          htmlFor="input-perintah"
           className="prompt"
           style={{ marginRight: 15 }}
         >
@@ -108,6 +108,7 @@ function InputPerintah() {
           placeholder="ketik perintahnya..."
           value={inputPerintahnya}
           onChange={onKetikPerintah}
+          // TODO: jangan tutup palet waktu blur, coba cari event lain
           onBlur={() => tutupPaletnya()}
           style={{ padding: "0.6em" }}
         />
