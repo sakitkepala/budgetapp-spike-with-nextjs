@@ -44,9 +44,6 @@ function PaletPerintah({ children, ...props }) {
 
   return (
     <PaletContext.Provider value={tutupPaletnya} {...props}>
-      {/* {!isTerbuka ? null : (
-        <div style={{ position: "relative" }}>{children}</div>
-      )} */}
       {!isTerbuka ? null : <>{children}</>}
     </PaletContext.Provider>
   );
