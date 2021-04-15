@@ -20,7 +20,7 @@ function prosesPerintah(input) {
   // 1. side effect
   // 2. return pesan
   // 3. lempar error/exception
-  console.log(`Perintah yang dikasih: "${input}" -> ${output}`);
+  console.info(`Perintah yang dikasih: "${input}" -> ${output}`);
   return output;
 }
 
@@ -39,36 +39,21 @@ function PaletPerintah({ children, ...props }) {
 
   // Shortcut khusus komponen PaletPerintah
   const tutupPaletnya = () => setIsTerbuka(false);
-  useHotkeys("esc", tutupPaletnya);
+  useHotkeys("esc", tutupPaletnya, { enableOnTags: ["INPUT"] });
   useHotkeys("shift+p", () => setIsTerbuka(true));
 
-  React.useEffect(() => {
-    const tutupPaletDenganEsc = (ev) => {
-      const esc = ev.key === "Escape" || ev.key === "Esc" || ev.keyCode === 27;
-      if (esc) {
-        tutupPaletnya();
-      }
-    };
-    window.addEventListener("keydown", tutupPaletDenganEsc);
-
-    // Yang direturn function ya, bukan nilai return function-nya...
-    // maka namanya, "clean up function":
-    return () => {
-      window.removeEventListener("keydown", tutupPaletDenganEsc);
-    };
-  }, [tutupPaletnya]);
-
   return (
-    <PaletContext.Provider value={{ isTerbuka, tutupPaletnya }} {...props}>
-      {!isTerbuka ? null : (
+    <PaletContext.Provider value={tutupPaletnya} {...props}>
+      {/* {!isTerbuka ? null : (
         <div style={{ position: "relative" }}>{children}</div>
-      )}
+      )} */}
+      {!isTerbuka ? null : <>{children}</>}
     </PaletContext.Provider>
   );
 }
 
 function InputPerintah() {
-  const { tutupPaletnya } = usePaletPerintah();
+  const tutupPaletnya = usePaletPerintah();
   const { outputPerintah, setOutputPerintah } = usePenyiarPerintah();
 
   const [inputPerintahnya, setInputPerintahnya] = React.useState("");
@@ -87,7 +72,9 @@ function InputPerintah() {
 
   function onSubmitPerintah(ev) {
     ev.preventDefault();
-    if (!inputPerintahnya) return;
+    if (!inputPerintahnya) {
+      return;
+    }
 
     const output = prosesPerintah(inputPerintahnya);
     setOutputPerintah(output);
@@ -125,8 +112,6 @@ function InputPerintah() {
           placeholder="ketik perintahnya..."
           value={inputPerintahnya}
           onChange={onKetikPerintah}
-          // TODO: jangan tutup palet waktu blur, coba cari event lain
-          // onBlur={() => tutupPaletnya()}
           style={{ padding: "0.6em" }}
         />
       </form>
