@@ -51,3 +51,18 @@ test("Palet Perintah cuma muncul saat eksekusi shortcut SHIFT+P", () => {
 
   expect(screen.getByLabelText(/palet perintah/i)).toBeInTheDocument();
 });
+
+test("Palet Perintah ditutup pakai tombol ESC", () => {
+  render(
+    <PenyiarPerintahProvider>
+      <PaletPerintah>
+        <InputPerintah />
+      </PaletPerintah>
+    </PenyiarPerintahProvider>
+  );
+
+  userShortcut("shift+p");
+  userShortcut("esc");
+
+  expect(screen.queryByLabelText(/palet perintah/i)).not.toBeInTheDocument();
+});

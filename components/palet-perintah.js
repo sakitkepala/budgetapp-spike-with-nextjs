@@ -42,6 +42,22 @@ function PaletPerintah({ children, ...props }) {
   useHotkeys("esc", tutupPaletnya);
   useHotkeys("shift+p", () => setIsTerbuka(true));
 
+  React.useEffect(() => {
+    const tutupPaletDenganEsc = (ev) => {
+      const esc = ev.key === "Escape" || ev.key === "Esc" || ev.keyCode === 27;
+      if (esc) {
+        tutupPaletnya();
+      }
+    };
+    window.addEventListener("keydown", tutupPaletDenganEsc);
+
+    // Yang direturn function ya, bukan nilai return function-nya...
+    // maka namanya, "clean up function":
+    return () => {
+      window.removeEventListener("keydown", tutupPaletDenganEsc);
+    };
+  }, [tutupPaletnya]);
+
   return (
     <PaletContext.Provider value={{ isTerbuka, tutupPaletnya }} {...props}>
       {!isTerbuka ? null : (
@@ -59,7 +75,6 @@ function InputPerintah() {
 
   const refInputPerintah = React.useRef(null);
   React.useEffect(() => {
-    // current property is refered to input element
     refInputPerintah.current.focus();
   }, []);
 
@@ -98,8 +113,9 @@ function InputPerintah() {
           className="prompt"
           style={{ marginRight: 15 }}
         >
-          👉
+          Input Perintah
         </label>
+        👉
         <input
           ref={refInputPerintah}
           type="text"
@@ -110,7 +126,7 @@ function InputPerintah() {
           value={inputPerintahnya}
           onChange={onKetikPerintah}
           // TODO: jangan tutup palet waktu blur, coba cari event lain
-          onBlur={() => tutupPaletnya()}
+          // onBlur={() => tutupPaletnya()}
           style={{ padding: "0.6em" }}
         />
       </form>
