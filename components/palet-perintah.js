@@ -81,6 +81,7 @@ function InputPerintah() {
 
   return (
     <div
+      aria-label="Palet Perintah"
       className="kotak-palet-perintah"
       style={{
         position: "absolute",
