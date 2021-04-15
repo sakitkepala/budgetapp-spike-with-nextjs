@@ -48,7 +48,7 @@ function userShortcut(kombinasi, target = document.activeElement) {
   }
 }
 
-test("Palet Perintah awal render cuma muncul setelah eksekusi shortcut SHIFT+P", () => {
+test('Input Palet Perintah gak dirender saat "awal render"', () => {
   render(
     <PenyiarPerintahProvider>
       <PaletPerintah>
@@ -57,40 +57,27 @@ test("Palet Perintah awal render cuma muncul setelah eksekusi shortcut SHIFT+P",
     </PenyiarPerintahProvider>
   );
   expect(screen.queryByLabelText(/palet perintah/i)).not.toBeInTheDocument();
+});
+
+test("Input Palet Perintah bisa dimunculkan & ditutup pakai shortcut SHIFT+P & ESC", () => {
+  render(
+    <PenyiarPerintahProvider>
+      <PaletPerintah>
+        <InputPerintah />
+      </PaletPerintah>
+    </PenyiarPerintahProvider>
+  );
 
   userShortcut("shift+p");
 
   expect(screen.getByLabelText(/palet perintah/i)).toBeInTheDocument();
-});
 
-test("Palet Perintah ditutup pakai tombol ESC", () => {
-  render(
-    <PenyiarPerintahProvider>
-      <PaletPerintah>
-        <InputPerintah />
-      </PaletPerintah>
-    </PenyiarPerintahProvider>
-  );
-
-  userShortcut("shift+p");
   userShortcut("esc");
 
   expect(screen.queryByLabelText(/palet perintah/i)).not.toBeInTheDocument();
-});
 
-test("Palet Perintah bisa dibuka lagi pakai shortcut setelah ditutup", () => {
-  render(
-    <PenyiarPerintahProvider>
-      <PaletPerintah>
-        <InputPerintah />
-      </PaletPerintah>
-    </PenyiarPerintahProvider>
-  );
-
-  // WORKS!
+  // munculkan sekali lagi biar yakin
   userShortcut("shift+p");
-  userShortcut("esc");
-  userShortcut("shift+p", window.document.body.querySelector("div"));
 
-  expect(screen.queryByLabelText(/palet perintah/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/palet perintah/i)).toBeInTheDocument();
 });
