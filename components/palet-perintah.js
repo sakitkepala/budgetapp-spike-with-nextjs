@@ -41,14 +41,14 @@ function prosesPerintah(input) {
 function InputPerintah({ onDitutup, isTerbuka, queryPerintahnya }) {
   const [querynya, setQuerynya] = queryPerintahnya;
 
-  // React.useEffect(() => {
-  //   // Waktu awal buka Palet, input suka sudah ada teksnya
-  //   // terutama teks dari eksekusi shortcut malah ikut terketik
-  //   // sekaligus untuk antisipasi teks query dari sesi sebelumnya.
-  //   if (isTerbuka && querynya.length > 0) {
-  //     setQuerynya("");
-  //   }
-  // }, [isTerbuka]);
+  React.useEffect(() => {
+    // Waktu awal buka Palet, input suka sudah ada teksnya
+    // terutama teks dari eksekusi shortcut malah ikut terketik
+    // sekaligus untuk antisipasi teks query dari sesi sebelumnya.
+    if (isTerbuka && querynya.length > 0) {
+      setQuerynya("");
+    }
+  }, [isTerbuka]);
 
   return (
     <Flex
