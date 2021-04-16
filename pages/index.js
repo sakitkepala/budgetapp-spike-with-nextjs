@@ -12,12 +12,13 @@
  *      tanda panah terutama, dan di cell yang fokus, nilainya bisa langsung diedit.
  */
 
+import * as React from "react";
 import {
   PenyiarPerintahProvider,
   usePenyiarPerintah,
 } from "../components/penyiar-perintah";
-import { Box } from "@chakra-ui/react";
-import { PaletPerintah, InputPerintah } from "../components/palet-perintah";
+import { Box, Kbd } from "@chakra-ui/react";
+import { PaletPerintah } from "../components/palet-perintah";
 
 function TayanganStatus() {
   const { outputPerintah } = usePenyiarPerintah();
@@ -25,31 +26,24 @@ function TayanganStatus() {
 }
 
 export default function HalamanBeranda() {
+  const [bajet, setBajet] = React.useState(0);
+
   return (
     <PenyiarPerintahProvider>
+      <PaletPerintah />
       <div className="depan">
         <main className="lembar">
-          <PaletPerintah>
-            <InputPerintah />
-          </PaletPerintah>
-
-          <h1 className="judul">Pake shortcut dong jaman now</h1>
-
-          <Box bg="tomato" w="100%" p={4} color="white">
-            Rp {"{Tempat nampilin duit bajet hoho}"},00
+          <Box w={150} h={40} bg="tomato" p={4} color="white">
+            <h3>Bajet yang bisa disebar:</h3>
+            <Box>Rp {bajet},00</Box>
           </Box>
 
-          {/* TODO: hapus button setelah commit test */}
-          <Box
-            as="button"
-            borderRadius="md"
-            bg="tomato"
-            color="white"
-            px={4}
-            h={8}
-          >
-            Box jadi button
-          </Box>
+          <h1 className="judul">
+            Input anggaran pakai Palet Perintah, tekan &rarr;{" "}
+            <span>
+              <Kbd>shift</Kbd> + <Kbd>P</Kbd>
+            </span>
+          </h1>
 
           <TayanganStatus />
         </main>

@@ -1,5 +1,12 @@
 import * as React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import {
+  Box,
+  Modal,
+  ModalBody,
+  ModalContent,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { usePenyiarPerintah } from "./penyiar-perintah";
 
 const listPerintah = ["masokk", "makan", "pergi"];
@@ -24,48 +31,48 @@ function prosesPerintah(input) {
   return output;
 }
 
-const PaletContext = React.createContext();
-
-function usePaletPerintah() {
-  const context = React.useContext(PaletContext);
-  if (!context) {
-    throw new Error("PaletPerintah dipake!!!");
-  }
-  return context;
-}
-
 // TODO: refaktor ke komponen modalnya chakra
-function PaletPerintah({ children, ...props }) {
-  const [isTerbuka, setIsTerbuka] = React.useState(false);
+function PaletPerintah() {
+  const { onOpen, onClose, isOpen: isTerbuka } = useDisclosure();
+  const setIsTerbuka = () => onOpen();
 
   // Shortcut khusus komponen PaletPerintah
-  const tutupPaletnya = () => setIsTerbuka(false);
-  useHotkeys("esc", tutupPaletnya, { enableOnTags: ["INPUT"] });
   useHotkeys("shift+p", () => setIsTerbuka(true));
+  // legacy:
+  // TODO: hapus ini karena sudah dihandle Modal chakra
+  const tutupPaletnya = () => onClose();
 
   return (
-    <PaletContext.Provider value={tutupPaletnya} {...props}>
-      {!isTerbuka ? null : <>{children}</>}
-    </PaletContext.Provider>
+    <Modal isOpen={isTerbuka} onClose={tutupPaletnya}>
+      <ModalContent bg="transparent" shadow="search">
+        <InputPerintah onTutup={tutupPaletnya} />
+        <ModalBody>
+          <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
+            Ada list pilihan perintah nanti di sini...
+          </Box>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 }
 
-function InputPerintah() {
-  const tutupPaletnya = usePaletPerintah();
+function InputPerintah(props) {
+  const [inputPerintahnya, setInputPerintahnya] = React.useState("");
+  const { onTutup: tutupPaletnya } = props;
   const { outputPerintah, setOutputPerintah } = usePenyiarPerintah();
 
-  const [inputPerintahnya, setInputPerintahnya] = React.useState("");
-
-  const refInputPerintah = React.useRef(null);
-  React.useEffect(() => {
-    refInputPerintah.current.focus();
-  }, []);
-
   function onKetikPerintah(ev) {
+    setInputPerintahnya(ev.target.value);
+
+    // Side effect di komponen lain...
+    // Mengosongkan teks & menutup diplay log pesan.
+    // ! Logic ini baiknya di komponen itu sendiri, dan
+    // komponen ini gak perlu aware dengan keadaan di sana.
+    // Dispatcher yang di sini sudah tinggal eksekusi saja.
+    // TODO: refaktor...
     if (outputPerintah) {
       setOutputPerintah("");
     }
-    setInputPerintahnya(ev.target.value);
   }
 
   function onSubmitPerintah(ev) {
@@ -102,7 +109,6 @@ function InputPerintah() {
         </label>
         👉
         <input
-          ref={refInputPerintah}
           type="text"
           name="perintah"
           id="input-perintah"
