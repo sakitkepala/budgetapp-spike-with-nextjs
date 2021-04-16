@@ -34,6 +34,7 @@ function usePaletPerintah() {
   return context;
 }
 
+// TODO: refaktor ke komponen modalnya chakra
 function PaletPerintah({ children, ...props }) {
   const [isTerbuka, setIsTerbuka] = React.useState(false);
 

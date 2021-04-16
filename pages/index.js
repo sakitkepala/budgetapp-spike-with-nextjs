@@ -16,6 +16,7 @@ import {
   PenyiarPerintahProvider,
   usePenyiarPerintah,
 } from "../components/penyiar-perintah";
+import { Box } from "@chakra-ui/react";
 import { PaletPerintah, InputPerintah } from "../components/palet-perintah";
 
 function TayanganStatus() {
@@ -24,13 +25,6 @@ function TayanganStatus() {
 }
 
 export default function HalamanBeranda() {
-  // TODO: tutup floating UI dengan keyboard `esc`
-  /* 
-  useHotkeys("esc", () => {
-    // tutup floating UI teraktas
-  });
-   */
-
   return (
     <PenyiarPerintahProvider>
       <div className="depan">
@@ -40,6 +34,23 @@ export default function HalamanBeranda() {
           </PaletPerintah>
 
           <h1 className="judul">Pake shortcut dong jaman now</h1>
+
+          <Box bg="tomato" w="100%" p={4} color="white">
+            Rp {"{Tempat nampilin duit bajet hoho}"},00
+          </Box>
+
+          {/* TODO: hapus button setelah commit test */}
+          <Box
+            as="button"
+            borderRadius="md"
+            bg="tomato"
+            color="white"
+            px={4}
+            h={8}
+          >
+            Box jadi button
+          </Box>
+
           <TayanganStatus />
         </main>
       </div>
