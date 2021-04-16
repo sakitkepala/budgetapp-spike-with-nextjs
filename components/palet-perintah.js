@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import {
   Box,
   Center,
@@ -9,8 +8,9 @@ import {
   ModalBody,
   ModalContent,
   useDisclosure,
+  useEventListener,
 } from "@chakra-ui/react";
-import { usePenyiarPerintah } from "./penyiar-perintah";
+// import { usePenyiarPerintah } from "./penyiar-perintah";
 
 const listPerintah = [
   { nama: "masokk", deskripsi: "Suatu perintah untuk... masokk!" },
@@ -38,45 +38,17 @@ function prosesPerintah(input) {
   return output;
 }
 
-function PaletPerintah() {
-  const { onOpen, onClose, isOpen } = useDisclosure();
-  // Shortcut khusus komponen PaletPerintah
-  useHotkeys("shift+p", onOpen);
+function InputPerintah({ onDitutup, isTerbuka, queryPerintahnya }) {
+  const [querynya, setQuerynya] = queryPerintahnya;
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
-      <ModalContent bg="transparent" shadow="search">
-        <InputPerintah onDitutup={onClose} isTerbuka={isOpen} />
-        <ModalBody>
-          <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
-            Ada list pilihan perintah nanti di sini...
-            <Box as="ul">
-              {listPerintah.map((perintah) => (
-                <Box as="li" key={perintah.nama}>
-                  {perintah.deskripsi}
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
-  );
-}
-
-function InputPerintah({ onDitutup, isTerbuka }) {
-  console.log(isTerbuka);
-  const [querynya, setQuerynya] = React.useState("");
-  const { outputPerintah, setOutputPerintah } = usePenyiarPerintah();
-
-  React.useEffect(() => {
-    // Waktu awal buka Palet, input suka sudah ada teksnya
-    // terutama teks dari eksekusi shortcut malah ikut terketik
-    // sekaligus untuk antisipasi teks query dari sesi sebelumnya.
-    if (isTerbuka && querynya.length > 0) {
-      setQuerynya("");
-    }
-  }, [isTerbuka]);
+  // React.useEffect(() => {
+  //   // Waktu awal buka Palet, input suka sudah ada teksnya
+  //   // terutama teks dari eksekusi shortcut malah ikut terketik
+  //   // sekaligus untuk antisipasi teks query dari sesi sebelumnya.
+  //   if (isTerbuka && querynya.length > 0) {
+  //     setQuerynya("");
+  //   }
+  // }, [isTerbuka]);
 
   return (
     <Flex
@@ -118,6 +90,48 @@ function InputPerintah({ onDitutup, isTerbuka }) {
         </Center>
       </Flex>
     </Flex>
+  );
+}
+
+function PaletPerintah() {
+  const { onOpen, onClose, isOpen } = useDisclosure();
+  const stateQuerynya = React.useState("");
+  const [querynya] = stateQuerynya;
+
+  // Shortcut khusus komponen PaletPerintah
+  useEventListener("keydown", (ev) => {
+    if (ev?.key?.toLowerCase() === "p" && ev["shiftKey"]) {
+      ev.preventDefault();
+      onOpen();
+    }
+  });
+
+  const bukaDaftarnya = querynya.length > 0;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <ModalContent bg="transparent" shadow="search">
+        <InputPerintah
+          onDitutup={onClose}
+          isTerbuka={isOpen}
+          queryPerintahnya={stateQuerynya}
+        />
+        <ModalBody>
+          {bukaDaftarnya && (
+            <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
+              Ada list pilihan perintah nanti di sini...
+              <Box as="ul">
+                {listPerintah.map((perintah) => (
+                  <Box as="li" key={perintah.nama}>
+                    {perintah.deskripsi}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 }
 
