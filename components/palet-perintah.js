@@ -2,6 +2,9 @@ import * as React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   Box,
+  Center,
+  chakra,
+  Flex,
   Modal,
   ModalBody,
   ModalContent,
@@ -9,7 +12,11 @@ import {
 } from "@chakra-ui/react";
 import { usePenyiarPerintah } from "./penyiar-perintah";
 
-const listPerintah = ["masokk", "makan", "pergi"];
+const listPerintah = [
+  { nama: "masokk", deskripsi: "Suatu perintah untuk... masokk!" },
+  { nama: "makan", deskripsi: "Suatu perintah untuk... makan" },
+  { nama: "pergi", deskripsi: "Suatu perintah untuk... pergi" },
+];
 
 function prosesPerintah(input) {
   // Prosedur ideal:
@@ -19,7 +26,7 @@ function prosesPerintah(input) {
   // 4. outputkan hasil, bisa lempar error atau exception kalau gagal, pesan sukses kalau berhasil
 
   // Di bawah model proses yang disederhanakan:
-  const output = listPerintah.includes(input)
+  const output = listPerintah.map((item) => item.nama).includes(input)
     ? "✅ perintah berhasil dieksekusi"
     : "❌ gak ngerti perintahnya!";
 
@@ -31,24 +38,25 @@ function prosesPerintah(input) {
   return output;
 }
 
-// TODO: refaktor ke komponen modalnya chakra
 function PaletPerintah() {
-  const { onOpen, onClose, isOpen: isTerbuka } = useDisclosure();
-  const setIsTerbuka = () => onOpen();
-
+  const { onOpen, onClose, isOpen } = useDisclosure();
   // Shortcut khusus komponen PaletPerintah
-  useHotkeys("shift+p", () => setIsTerbuka(true));
-  // legacy:
-  // TODO: hapus ini karena sudah dihandle Modal chakra
-  const tutupPaletnya = () => onClose();
+  useHotkeys("shift+p", onOpen);
 
   return (
-    <Modal isOpen={isTerbuka} onClose={tutupPaletnya}>
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalContent bg="transparent" shadow="search">
-        <InputPerintah onTutup={tutupPaletnya} />
+        <InputPerintah onDitutup={onClose} isTerbuka={isOpen} />
         <ModalBody>
           <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
             Ada list pilihan perintah nanti di sini...
+            <Box as="ul">
+              {listPerintah.map((perintah) => (
+                <Box as="li" key={perintah.nama}>
+                  {perintah.deskripsi}
+                </Box>
+              ))}
+            </Box>
           </Box>
         </ModalBody>
       </ModalContent>
@@ -56,71 +64,61 @@ function PaletPerintah() {
   );
 }
 
-function InputPerintah(props) {
-  const [inputPerintahnya, setInputPerintahnya] = React.useState("");
-  const { onTutup: tutupPaletnya } = props;
+function InputPerintah({ onDitutup, isTerbuka }) {
+  console.log(isTerbuka);
+  const [querynya, setQuerynya] = React.useState("");
   const { outputPerintah, setOutputPerintah } = usePenyiarPerintah();
 
-  function onKetikPerintah(ev) {
-    setInputPerintahnya(ev.target.value);
-
-    // Side effect di komponen lain...
-    // Mengosongkan teks & menutup diplay log pesan.
-    // ! Logic ini baiknya di komponen itu sendiri, dan
-    // komponen ini gak perlu aware dengan keadaan di sana.
-    // Dispatcher yang di sini sudah tinggal eksekusi saja.
-    // TODO: refaktor...
-    if (outputPerintah) {
-      setOutputPerintah("");
+  React.useEffect(() => {
+    // Waktu awal buka Palet, input suka sudah ada teksnya
+    // terutama teks dari eksekusi shortcut malah ikut terketik
+    // sekaligus untuk antisipasi teks query dari sesi sebelumnya.
+    if (isTerbuka && querynya.length > 0) {
+      setQuerynya("");
     }
-  }
-
-  function onSubmitPerintah(ev) {
-    ev.preventDefault();
-    if (!inputPerintahnya) {
-      return;
-    }
-
-    const output = prosesPerintah(inputPerintahnya);
-    setOutputPerintah(output);
-    tutupPaletnya();
-  }
+  }, [isTerbuka]);
 
   return (
-    <div
+    <Flex
       aria-label="Palet Perintah"
       className="kotak-palet-perintah"
-      style={{
-        position: "absolute",
-        width: "300px",
-        height: "50px",
-        padding: "0.4em",
-        backgroundColor: "gray",
-        boxShadow: "2px 5px ",
-      }}
+      flexDir="column"
+      w="100%"
+      bg="gray"
+      p="1.5"
+      justifyContent="space-between"
+      boxShadow="lg"
+      sx={{ boxShadow: "4px 5px " }}
     >
-      <form onSubmit={onSubmitPerintah}>
-        <label
-          htmlFor="input-perintah"
-          className="prompt"
-          style={{ marginRight: 15 }}
-        >
-          Input Perintah
-        </label>
-        👉
-        <input
+      <chakra.label htmlFor="input-perintah" color="white">
+        Input Perintah
+      </chakra.label>
+      <Flex bg="darkgray" pos="relative" flexDir="row-reverse">
+        <chakra.input
           type="text"
           name="perintah"
           id="input-perintah"
           className="input-perintah"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
           placeholder="ketik perintahnya..."
-          value={inputPerintahnya}
-          onChange={onKetikPerintah}
-          style={{ padding: "0.6em" }}
+          value={querynya}
+          onChange={(ev) => {
+            setQuerynya(ev.target.value);
+          }}
+          color="aquamarine"
+          outline="0"
+          w="92%"
+          p="2.5"
+          bg="transparent"
         />
-      </form>
-    </div>
+        <Center className="prompt" pos="absolute" left="0" w="50px" h="50px">
+          👉
+        </Center>
+      </Flex>
+    </Flex>
   );
 }
 
-export { PaletPerintah, InputPerintah };
+export { PaletPerintah };
