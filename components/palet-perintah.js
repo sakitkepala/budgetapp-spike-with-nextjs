@@ -13,6 +13,10 @@ import {
 // import { usePenyiarPerintah } from "./penyiar-perintah";
 
 const listPerintah = [
+  {
+    nama: "bajet tambah",
+    deskripsi: `Bajet: Menambahkan dana ke Bajet [bajet tambah]`,
+  },
   { nama: "masokk", deskripsi: "Suatu perintah untuk... masokk!" },
   { nama: "makan", deskripsi: "Suatu perintah untuk... makan" },
   { nama: "pergi", deskripsi: "Suatu perintah untuk... pergi" },
@@ -43,6 +47,7 @@ function InputPerintah({
   isTerbuka,
   queryPerintahnya,
   indexPilihan,
+  onEksekusi,
 }) {
   const { indexAktif, setIndexAktif, indexTerakhir } = indexPilihan;
   const [querynya, setQuerynya] = queryPerintahnya;
@@ -97,6 +102,9 @@ function InputPerintah({
             } else if (ev.key === "ArrowUp") {
               const indexTerbaru = indexAktif > 0 ? indexAktif - 1 : 0;
               setIndexAktif(indexTerbaru);
+            } else if (ev.key === "Enter") {
+              console.log("enter", "indexAktif", indexAktif);
+              onEksekusi();
             }
           }}
           color="aquamarine"
@@ -138,6 +146,14 @@ function PaletPerintah() {
           isTerbuka={isOpen}
           queryPerintahnya={[querynya, setQuerynya]}
           indexPilihan={{ indexAktif, setIndexAktif, indexTerakhir }}
+          onEksekusi={() => {
+            console.log(
+              "eksekusi perintah [i]:",
+              indexAktif,
+              "/",
+              listPerintah[indexAktif]
+            );
+          }}
         />
         <ModalBody>
           <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
