@@ -20,11 +20,11 @@ function reducerPerintah(state) {
 }
 
 function PenyiarPerintahProvider(props) {
-  // const [outputPerintah, setOutputPerintah] = React.useState("");
-  const [outputPerintah, setOutputPerintah] = React.useReducer(
-    reducerPerintah,
-    "default"
-  );
+  const [outputPerintah, setOutputPerintah] = React.useState("");
+  // const [outputPerintah, setOutputPerintah] = React.useReducer(
+  //   reducerPerintah,
+  //   "default"
+  // );
   const value = { outputPerintah, setOutputPerintah };
 
   return <PenyiarPerintahContext.Provider value={value} {...props} />;

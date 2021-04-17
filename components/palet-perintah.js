@@ -10,7 +10,7 @@ import {
   useDisclosure,
   useEventListener,
 } from "@chakra-ui/react";
-// import { usePenyiarPerintah } from "./penyiar-perintah";
+import { usePenyiarPerintah } from "./penyiar-perintah";
 
 const listPerintah = [
   {
@@ -103,7 +103,6 @@ function InputPerintah({
               const indexTerbaru = indexAktif > 0 ? indexAktif - 1 : 0;
               setIndexAktif(indexTerbaru);
             } else if (ev.key === "Enter") {
-              console.log("enter", "indexAktif", indexAktif);
               onEksekusi();
             }
           }}
@@ -122,6 +121,7 @@ function InputPerintah({
 }
 
 function PaletPerintah() {
+  const { setOutputPerintah } = usePenyiarPerintah();
   const { onOpen, onClose, isOpen } = useDisclosure();
   const [querynya, setQuerynya] = React.useState("");
   const [indexAktif, setIndexAktif] = React.useState(0);
@@ -147,12 +147,7 @@ function PaletPerintah() {
           queryPerintahnya={[querynya, setQuerynya]}
           indexPilihan={{ indexAktif, setIndexAktif, indexTerakhir }}
           onEksekusi={() => {
-            console.log(
-              "eksekusi perintah [i]:",
-              indexAktif,
-              "/",
-              listPerintah[indexAktif]
-            );
+            setOutputPerintah(listPerintah[indexAktif].deskripsi);
           }}
         />
         <ModalBody>
