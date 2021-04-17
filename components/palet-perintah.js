@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { usePenyiarPerintah } from "./penyiar-perintah";
 
+// TODO: dibuat modul sendiri, idealnya dari API... atau seakan-akan dari API
 const listPerintah = [
   {
     nama: "bajet tambah",
@@ -21,26 +22,6 @@ const listPerintah = [
   { nama: "makan", deskripsi: "Suatu perintah untuk... makan" },
   { nama: "pergi", deskripsi: "Suatu perintah untuk... pergi" },
 ];
-
-function prosesPerintah(input) {
-  // Prosedur ideal:
-  // 1. baca/terjemahkan input <- waktunya belajar regex wkwk
-  // 2. cocokkan dengan perbendaharaan perintah yang dikenal
-  // 3. eksekusi perintah
-  // 4. outputkan hasil, bisa lempar error atau exception kalau gagal, pesan sukses kalau berhasil
-
-  // Di bawah model proses yang disederhanakan:
-  const output = listPerintah.map((item) => item.nama).includes(input)
-    ? "✅ perintah berhasil dieksekusi"
-    : "❌ gak ngerti perintahnya!";
-
-  // Pilihan:
-  // 1. side effect
-  // 2. return pesan
-  // 3. lempar error/exception
-  console.info(`Perintah yang dikasih: "${input}" -> ${output}`);
-  return output;
-}
 
 function InputPerintah({
   onDitutup,
@@ -104,6 +85,7 @@ function InputPerintah({
               setIndexAktif(indexTerbaru);
             } else if (ev.key === "Enter") {
               onEksekusi();
+              onDitutup();
             }
           }}
           color="aquamarine"
@@ -125,7 +107,6 @@ function PaletPerintah() {
   const { onOpen, onClose, isOpen } = useDisclosure();
   const [querynya, setQuerynya] = React.useState("");
   const [indexAktif, setIndexAktif] = React.useState(0);
-  // const [querynya] = stateQuerynya;
 
   // Shortcut khusus komponen PaletPerintah
   useEventListener("keydown", (ev) => {
@@ -135,7 +116,6 @@ function PaletPerintah() {
     }
   });
 
-  // const bukaDaftarnya = querynya.length > 0;
   const indexTerakhir = listPerintah.length - 1;
 
   return (
