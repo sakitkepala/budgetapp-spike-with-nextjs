@@ -38,7 +38,13 @@ function prosesPerintah(input) {
   return output;
 }
 
-function InputPerintah({ onDitutup, isTerbuka, queryPerintahnya }) {
+function InputPerintah({
+  onDitutup,
+  isTerbuka,
+  queryPerintahnya,
+  indexPilihan,
+}) {
+  const { indexAktif, setIndexAktif, indexTerakhir } = indexPilihan;
   const [querynya, setQuerynya] = queryPerintahnya;
 
   React.useEffect(() => {
@@ -47,6 +53,9 @@ function InputPerintah({ onDitutup, isTerbuka, queryPerintahnya }) {
     // sekaligus untuk antisipasi teks query dari sesi sebelumnya.
     if (isTerbuka && querynya.length > 0) {
       setQuerynya("");
+    }
+    if (isTerbuka) {
+      setIndexAktif(0);
     }
   }, [isTerbuka]);
 
@@ -79,6 +88,17 @@ function InputPerintah({ onDitutup, isTerbuka, queryPerintahnya }) {
           onChange={(ev) => {
             setQuerynya(ev.target.value);
           }}
+          onKeyDown={(ev) => {
+            // ←↑→↓
+            if (ev.key === "ArrowDown") {
+              const indexTerbaru =
+                indexAktif < indexTerakhir ? indexAktif + 1 : indexTerakhir;
+              setIndexAktif(indexTerbaru);
+            } else if (ev.key === "ArrowUp") {
+              const indexTerbaru = indexAktif > 0 ? indexAktif - 1 : 0;
+              setIndexAktif(indexTerbaru);
+            }
+          }}
           color="aquamarine"
           outline="0"
           w="92%"
@@ -95,8 +115,9 @@ function InputPerintah({ onDitutup, isTerbuka, queryPerintahnya }) {
 
 function PaletPerintah() {
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const stateQuerynya = React.useState("");
-  const [querynya] = stateQuerynya;
+  const [querynya, setQuerynya] = React.useState("");
+  const [indexAktif, setIndexAktif] = React.useState(0);
+  // const [querynya] = stateQuerynya;
 
   // Shortcut khusus komponen PaletPerintah
   useEventListener("keydown", (ev) => {
@@ -106,7 +127,8 @@ function PaletPerintah() {
     }
   });
 
-  const bukaDaftarnya = querynya.length > 0;
+  // const bukaDaftarnya = querynya.length > 0;
+  const indexTerakhir = listPerintah.length - 1;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -114,21 +136,22 @@ function PaletPerintah() {
         <InputPerintah
           onDitutup={onClose}
           isTerbuka={isOpen}
-          queryPerintahnya={stateQuerynya}
+          queryPerintahnya={[querynya, setQuerynya]}
+          indexPilihan={{ indexAktif, setIndexAktif, indexTerakhir }}
         />
         <ModalBody>
-          {bukaDaftarnya && (
-            <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
-              Ada list pilihan perintah nanti di sini...
-              <Box as="ul">
-                {listPerintah.map((perintah) => (
-                  <Box as="li" key={perintah.nama}>
-                    {perintah.deskripsi}
-                  </Box>
-                ))}
+          <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
+            Ada list pilihan perintah nanti di sini:
+            {listPerintah.map((perintah, index) => (
+              <Box
+                aria-selected={index === indexAktif ? true : undefined}
+                _selected={{ bgColor: "whiteAlpha.600" }}
+                key={perintah.nama}
+              >
+                {perintah.deskripsi}
               </Box>
-            </Box>
-          )}
+            ))}
+          </Box>
         </ModalBody>
       </ModalContent>
     </Modal>
