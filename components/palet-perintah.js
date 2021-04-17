@@ -24,26 +24,26 @@ const listPerintah = [
 ];
 
 function InputPerintah({
-  onDitutup,
-  isTerbuka,
+  modal,
   queryPerintahnya,
   indexPilihan,
+  onChange,
   onEksekusi,
 }) {
   const { indexAktif, setIndexAktif, indexTerakhir } = indexPilihan;
   const [querynya, setQuerynya] = queryPerintahnya;
 
   React.useEffect(() => {
-    // Waktu awal buka Palet, input suka sudah ada teksnya
-    // terutama teks dari eksekusi shortcut malah ikut terketik
-    // sekaligus untuk antisipasi teks query dari sesi sebelumnya.
-    if (isTerbuka && querynya.length > 0) {
+    // Paksa teks input dikosongkan ketika modal Palet Perintah dibuka,
+    // sekaligus mereset teks query dari sesi sebelumnya.
+    if (modal.isOpen && querynya.length > 0) {
       setQuerynya("");
     }
-    if (isTerbuka) {
+    // Index awal direset ketika Palet dibuka.
+    if (modal.isOpen) {
       setIndexAktif(0);
     }
-  }, [isTerbuka]);
+  }, [modal.isOpen]);
 
   return (
     <Flex
@@ -72,6 +72,7 @@ function InputPerintah({
           placeholder="ketik perintahnya..."
           value={querynya}
           onChange={(ev) => {
+            onChange?.();
             setQuerynya(ev.target.value);
           }}
           onKeyDown={(ev) => {
@@ -85,7 +86,7 @@ function InputPerintah({
               setIndexAktif(indexTerbaru);
             } else if (ev.key === "Enter") {
               onEksekusi();
-              onDitutup();
+              modal.onClose();
             }
           }}
           color="aquamarine"
@@ -122,10 +123,10 @@ function PaletPerintah() {
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalContent bg="transparent" shadow="search">
         <InputPerintah
-          onDitutup={onClose}
-          isTerbuka={isOpen}
+          modal={{ onClose, isOpen }}
           queryPerintahnya={[querynya, setQuerynya]}
           indexPilihan={{ indexAktif, setIndexAktif, indexTerakhir }}
+          onChange={() => setOutputPerintah("")}
           onEksekusi={() => {
             setOutputPerintah(listPerintah[indexAktif].deskripsi);
           }}
@@ -133,15 +134,18 @@ function PaletPerintah() {
         <ModalBody>
           <Box role="listbox" h="300" bg="aquamarine" shadow="sm" mt="20">
             Ada list pilihan perintah nanti di sini:
-            {listPerintah.map((perintah, index) => (
-              <Box
-                aria-selected={index === indexAktif ? true : undefined}
-                _selected={{ bgColor: "whiteAlpha.600" }}
-                key={perintah.nama}
-              >
-                {perintah.deskripsi}
-              </Box>
-            ))}
+            {listPerintah.map((perintah, index) => {
+              const isSelected = index === indexAktif ? true : undefined;
+              return (
+                <Box
+                  aria-selected={isSelected}
+                  _selected={{ bgColor: "whiteAlpha.600" }}
+                  key={perintah.nama}
+                >
+                  {perintah.deskripsi}
+                </Box>
+              );
+            })}
           </Box>
         </ModalBody>
       </ModalContent>
