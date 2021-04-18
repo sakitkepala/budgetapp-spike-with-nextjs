@@ -112,30 +112,31 @@ function PromptInteraktif() {
   }, [sudahRegister, perintahnya]);
 
   function registerPerintah(perintah) {
-    setPerintah(perintah);
+    const dialogDenganIndex = perintah.dialog.map((step, index) => ({
+      ...step,
+      index,
+    }));
+    const perintahDiregister = { ...perintah, dialog: dialogDenganIndex };
+
+    setPerintah(perintahDiregister);
     setRegister(true);
   }
 
   function registerDialog(value) {
-    console.log(value);
-    const { dialog } = perintahnya;
+    const { dialog: dialogSebelumnya } = perintahnya;
+    console.log(value, typeof value);
+    // TODO: konversi nilai input dari form yang defaultnya selalu string sesuai type fieldnya
 
-    let isAssigned = false;
-    const perbaruanDialog = dialog.map((step) => {
-      if (!step.nilai && !isAssigned) {
-        isAssigned = true;
-        return {
-          ...step,
-          nilai: value,
-        };
+    const dialog = dialogSebelumnya.map((step) => {
+      // step yang diupdate nilainya
+      if (step.index === data.index) {
+        return { ...step, nilai: value };
       }
+      // sisanya tetap
       return step;
     });
 
-    const perbaruanPerintah = { ...perintahnya, dialog: [...perbaruanDialog] };
-    console.log(perbaruanPerintah);
-
-    setPerintah(perbaruanPerintah);
+    setPerintah({ ...perintahnya, dialog });
   }
 
   const cleanupPrompt = () => {};
