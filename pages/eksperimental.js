@@ -6,6 +6,8 @@ import { KotakInputPalet } from "../components/eksperimental/palet-input";
 function PromptDialog({ prompt, sedangDialog, registerInput }) {
   const { onOpen, onClose, isOpen } = useDisclosure();
 
+  const [inputan, setInputan] = React.useState("");
+
   React.useEffect(() => {
     if (sedangDialog) {
       onOpen();
@@ -25,15 +27,16 @@ function PromptDialog({ prompt, sedangDialog, registerInput }) {
       <ModalContent bg="transparent" shadow="search">
         <KotakInputPalet
           label="Step... (contoh: masukkan bajet yang ingin dipakai...)"
+          value={inputan}
+          onChange={(ev) => setInputan(ev.target.value)}
           onKeyDown={(ev) => {
             // ←↑→↓
             if (ev.key === "Enter") {
               // ...kasih tau parent ada inputan untuk prompt
               registerInput(ev.target.value);
 
-              // close... tapi jangan clean up dulu kalau masih ada step selanjutnya
-              // sementara sebelum atas jadi
-              // prompt.cleanupPrompt(); // ! <-- BAHAYA! HAPUS KALAU SUDAH SELESAI!
+              // ...selesaikan sesi prompt
+              setInputan("");
               onClose();
             }
           }}
@@ -43,68 +46,108 @@ function PromptDialog({ prompt, sedangDialog, registerInput }) {
   );
 }
 
+async function prompt(perintah, dispatch) {
+  dispatch({ status: "memproses" });
+
+  const dialog = perintah.dialog.find((dialog) =>
+    !dialog.nilai ? true : false
+  );
+
+  if (dialog) {
+    return Promise.resolve({
+      dialog,
+      pesan: "Perintah diproses. Menunggu prompt dialog...",
+    });
+  }
+
+  // TODO: mengeksekusi perintah yang sebenarnya ketika semua dialog prompt sudah terpenuhi
+  try {
+    // contoh: bikin request request ke backend untuk update data bajet di database
+    return Promise.resolve({
+      data: "dummy data respon berhasil",
+      pesan: "Perintah berhasil dijalankan.",
+    });
+  } catch (error) {
+    return Promise.reject("GAGAL!!!");
+  }
+}
+
 function PromptInteraktif() {
-  const [perintah, setPerintah] = React.useState(null);
-  const [situasi, setSituasi] = React.useState("query");
-  const [indexStep, setIndexStep] = React.useState(0);
-  const [stepSaatIni, setStepSaatIni] = React.useState(null);
+  const [sudahRegister, setRegister] = React.useState(false);
+  const [perintahnya, setPerintah] = React.useState(null);
 
-  const sedangQuery = situasi === "query";
-  const sedangDialog = situasi === "dialog";
-  const sedangMemproses = situasi === "memproses";
-  // const step = !perintah ? null : perintah.step[indexStep];
+  const stateAwal = { status: "idle", step: null, error: null };
+  const [state, dispatch] = React.useReducer(
+    (state, action) => ({ ...state, ...action }),
+    stateAwal
+  );
+  const { status, data, error } = state;
 
-  console.log(situasi);
-  React.useEffect(() => {
-    if (!perintah) {
-      console.log("idle: skip perintah");
-      return;
-    }
-
-    if (!(indexStep < perintah.step.length)) {
-      console.log("selesai: gak ada sisa step lagi.");
-      return;
-    }
-
-    console.log("eksekusi perintah", `\`${perintah.perintah}\``);
-    console.log("length", perintah.step.length);
-    setSituasi("dialog");
-  }, [perintah, indexStep]);
+  const sedangDialog = status === "menunggu";
 
   React.useEffect(() => {
-    if (!perintah || indexStep >= perintah.step.length) {
+    console.log("useEffect");
+    if (!sudahRegister) {
       return;
     }
 
-    console.log("eksekusi step", `\`${perintah.step[indexStep].deskripsi}\``);
-    // console.log(perintah.step[indexStep]);
-    setSituasi("dialog");
-  }, [indexStep]);
+    // ...run
+    prompt(perintahnya, dispatch).then(
+      // sukses
+      (res) => {
+        if (res.data) {
+          // TODO: dispatch({ data: res.data, status: "berhasil" });
+          dispatch({ data: "dummy data respon berhasil", status: "berhasil" });
+        } else {
+          dispatch({ data: res.dialog, status: "menunggu" });
+        }
+      }
 
-  const cleanupPrompt = () => {
-    setPerintah(null);
-    setSituasi("query");
-    // setStep(null);
-  };
+      // TODO: ketika rejek
+      // error
+      // (error) => {
+      //   dispatch({ error, status: "gagal" });
+      // }
+    );
+  }, [sudahRegister, perintahnya]);
 
+  function registerPerintah(perintah) {
+    setPerintah(perintah);
+    setRegister(true);
+  }
+
+  function registerDialog(value) {
+    console.log(value);
+    const { dialog } = perintahnya;
+
+    let isAssigned = false;
+    const perbaruanDialog = dialog.map((step) => {
+      if (!step.nilai && !isAssigned) {
+        isAssigned = true;
+        return {
+          ...step,
+          nilai: value,
+        };
+      }
+      return step;
+    });
+
+    const perbaruanPerintah = { ...perintahnya, dialog: [...perbaruanDialog] };
+    console.log(perbaruanPerintah);
+
+    setPerintah(perbaruanPerintah);
+  }
+
+  const cleanupPrompt = () => {};
+
+  console.log("status:", status);
   return (
     <div>
-      <PaletPerintah
-        prompt={{ cleanupPrompt }}
-        sedangQuery={sedangQuery}
-        registerPerintah={(perintah) => setPerintah(perintah)}
-      />
+      <PaletPerintah sedangQuery={true} registerPerintah={registerPerintah} />
       <PromptDialog
-        prompt={{ cleanupPrompt }}
         sedangDialog={sedangDialog}
-        stepSaatIni={stepSaatIni}
-        registerInput={(input) => {
-          console.log(input);
-          // if (indexStep < perintah.step.length) {
-          setIndexStep(indexStep + 1);
-          // }
-          setSituasi("memproses");
-        }}
+        prompt={{ cleanupPrompt }}
+        registerInput={registerDialog}
       />
     </div>
   );

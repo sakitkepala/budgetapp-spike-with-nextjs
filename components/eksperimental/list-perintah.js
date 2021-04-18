@@ -1,22 +1,37 @@
 export default [
   {
+    id: 1432,
     perintah: "bajet tambah",
     deskripsi: `Bajet: Menambahkan dana ke Bajet [bajet tambah]`,
-    step: [
+    dialog: [
       {
         deskripsi: "Masukkan nominal Bajet yang ingin ditambahkan...",
-        field: "number",
+        field: "nominal",
+        type: "number",
+        required: true,
+        nilai: null,
       },
       {
         deskripsi: "Lagi, biar mantep...",
-        field: "number",
+        field: "nominal",
+        type: "number",
+        required: false,
+        nilai: null,
+      },
+      {
+        deskripsi: "Lagi, biar mantep...",
+        field: "nominal",
+        type: "number",
+        required: false,
+        nilai: null,
       },
     ],
   },
   {
+    id: 1433,
     perintah: "makan",
     deskripsi: "Suatu perintah untuk... makan",
-    step: [
+    dialog: [
       {
         deskripsi: "Suka makanan apa kamu kah?",
         field: "string",
