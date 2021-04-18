@@ -1,4 +1,5 @@
 import * as React from "react";
+import bajet from "../lib/api/bajet";
 import { Box, Kbd } from "@chakra-ui/react";
 import { PaletPerintah } from "../components/eksperimental/palet-perintah";
 import { PromptDialog } from "../components/eksperimental/prompt-dialog";
@@ -24,10 +25,10 @@ async function prompt(perintah) {
 
   const dialog = perintah.dialog.find(({ nilai }) => nilai === null);
   if (dialog) {
-    return Promise.resolve({
+    return {
       dialog,
       pesan: "Perintah diproses. Menunggu prompt dialog...",
-    });
+    };
   }
 
   // TODO: mengeksekusi perintah yang sebenarnya ketika semua dialog prompt sudah terpenuhi
@@ -35,17 +36,20 @@ async function prompt(perintah) {
     // contoh: bikin request request ke backend untuk update data bajet di database
     // const data = await fetch(...).then(res => res, error => throw new Error(error))
     // return data
-    return Promise.resolve({
-      data: "dummy data respon berhasil",
+
+    // Simulasi request API
+    const res = bajet.update({ nominal: 2000 });
+
+    return {
+      data: res,
       pesan: "Perintah berhasil dijalankan.",
-    });
+    };
   } catch (error) {
     return Promise.reject("GAGAL!!!");
   }
 }
 
-function PromptInteraktif() {
-  const [sudahRegister, setRegister] = React.useState(false);
+function PromptInteraktif({ page }) {
   const [perintahnya, setPerintah] = React.useState(null);
 
   const stateAwal = { status: "idle", step: null, error: null };
@@ -56,10 +60,11 @@ function PromptInteraktif() {
   const { status, data, error } = state;
 
   const sedangDialog = status === "menunggu";
+  const sedangBerhasil = status === "berhasil";
 
   React.useEffect(() => {
-    console.log("useEffect");
-    if (!sudahRegister) {
+    console.log("useEffect: prompt");
+    if (!perintahnya) {
       return;
     }
 
@@ -81,7 +86,17 @@ function PromptInteraktif() {
       //   dispatch({ error, status: "gagal" });
       // }
     );
-  }, [sudahRegister, perintahnya]);
+  }, [perintahnya]);
+
+  React.useEffect(() => {
+    console.log("useEffect: update UI bajet");
+    if (!sedangBerhasil) {
+      return;
+    }
+
+    page.aksi.setBajet(data);
+    setPerintah(null);
+  }, [sedangBerhasil]);
 
   function registerPerintah(perintah) {
     const dialogDenganIndex = perintah.dialog.map((step, index) => ({
@@ -91,7 +106,6 @@ function PromptInteraktif() {
     const perintahDiregister = { ...perintah, dialog: dialogDenganIndex };
 
     setPerintah(perintahDiregister);
-    setRegister(true);
   }
 
   function registerDialog(value) {
@@ -111,6 +125,7 @@ function PromptInteraktif() {
     setPerintah({ ...perintahnya, dialog });
   }
 
+  // TODO:
   const cleanupPrompt = () => {};
 
   console.log("status:", status);
@@ -126,10 +141,15 @@ function PromptInteraktif() {
   );
 }
 
-export default function HalamanEksperimental({ data: { bajet } }) {
+export default function HalamanEksperimental({ data }) {
+  console.log("render page: HalamanEksperimental");
+  const { bajet: bajetFromProps } = data;
+
+  const [bajet, setBajet] = React.useState(bajetFromProps);
+
   return (
     <div className="depan">
-      <PromptInteraktif />
+      <PromptInteraktif page={{ data, aksi: { setBajet } }} />
       <main className="lembar">
         <Box w={150} h={40} bg="tomato" p={4} color="white">
           <h3>Bajet yang bisa disebar:</h3>
@@ -151,7 +171,7 @@ export async function getStaticProps() {
   return {
     props: {
       data: {
-        bajet: { nominal: 0 },
+        bajet: bajet.read(),
       },
     },
   };
