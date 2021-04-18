@@ -3,13 +3,26 @@ import { Box, Kbd } from "@chakra-ui/react";
 import { PaletPerintah } from "../components/eksperimental/palet-perintah";
 import { PromptDialog } from "../components/eksperimental/prompt-dialog";
 
-async function prompt(perintah, dispatch) {
-  dispatch({ status: "memproses" });
+async function prompt(perintah) {
+  /**
+   * Step:
+   * 1. memproses multi step prompt
+   * 2. membuat request yang sebenarnya (misal, ke back end) pakai data
+   *    yang sudah dilengkapi user lewat prompt sebelumnya
+   *
+   * Pemrosesan perintah prompt dimulai dengan membaca array dialog
+   * lalu mencari item data pertama yang akan dipakai untuk menampilkan
+   * dialog prompt untuk dijawab user.
+   *
+   * Item pertama yang diambil itu nilainya pasti masih null.
+   *
+   * Tapi sebagai perhatian, ada kondisi dimana field-nya boleh dikosingi,
+   * atau tidak mandatory. Bagaimana caranya membedakan item yang field-nya
+   * tidak required/boleh dikosongi ini dengan item yang ingin kita cari
+   * sebenarnya?
+   */
 
-  const dialog = perintah.dialog.find((dialog) =>
-    !dialog.nilai ? true : false
-  );
-
+  const dialog = perintah.dialog.find(({ nilai }) => nilai === null);
   if (dialog) {
     return Promise.resolve({
       dialog,
@@ -20,6 +33,8 @@ async function prompt(perintah, dispatch) {
   // TODO: mengeksekusi perintah yang sebenarnya ketika semua dialog prompt sudah terpenuhi
   try {
     // contoh: bikin request request ke backend untuk update data bajet di database
+    // const data = await fetch(...).then(res => res, error => throw new Error(error))
+    // return data
     return Promise.resolve({
       data: "dummy data respon berhasil",
       pesan: "Perintah berhasil dijalankan.",
@@ -49,12 +64,12 @@ function PromptInteraktif() {
     }
 
     // ...run
-    prompt(perintahnya, dispatch).then(
+    dispatch({ status: "memproses" });
+    prompt(perintahnya).then(
       // sukses
       (res) => {
         if (res.data) {
-          // TODO: dispatch({ data: res.data, status: "berhasil" });
-          dispatch({ data: "dummy data respon berhasil", status: "berhasil" });
+          dispatch({ data: res.data, status: "berhasil" });
         } else {
           dispatch({ data: res.dialog, status: "menunggu" });
         }
