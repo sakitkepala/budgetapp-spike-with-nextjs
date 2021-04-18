@@ -19,7 +19,7 @@ export default [
         nilai: null,
       },
       {
-        deskripsi: "Lagi, biar mantep...",
+        deskripsi: "Lagi, biar mantep... (1)",
         field: "nominal",
         type: "number",
         required: false,

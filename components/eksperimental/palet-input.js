@@ -2,7 +2,7 @@ import * as React from "react";
 import { Center, chakra, Flex } from "@chakra-ui/react";
 
 function KotakInputPalet({
-  label,
+  label = "Step... (contoh: masukkan bajet yang ingin dipakai...)",
   inputName = "perintah",
   placeholder = "...",
   ...props

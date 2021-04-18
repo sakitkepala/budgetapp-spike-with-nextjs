@@ -68,10 +68,10 @@ function PromptInteraktif() {
     prompt(perintahnya).then(
       // sukses
       (res) => {
-        if (res.data) {
-          dispatch({ data: res.data, status: "berhasil" });
-        } else {
+        if (!res.data) {
           dispatch({ data: res.dialog, status: "menunggu" });
+        } else {
+          dispatch({ data: res.data, status: "berhasil" });
         }
       }
 
@@ -119,7 +119,7 @@ function PromptInteraktif() {
       <PaletPerintah sedangQuery={true} registerPerintah={registerPerintah} />
       <PromptDialog
         sedangDialog={sedangDialog}
-        prompt={{ cleanupPrompt }}
+        prompt={{ data, cleanupPrompt }}
         registerInput={registerDialog}
       />
     </div>

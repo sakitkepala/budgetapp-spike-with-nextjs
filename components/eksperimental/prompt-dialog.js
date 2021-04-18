@@ -7,6 +7,8 @@ function PromptDialog({ prompt, sedangDialog, registerInput }) {
 
   const [inputan, setInputan] = React.useState("");
 
+  const labelKotakInput = prompt.data?.deskripsi;
+
   React.useEffect(() => {
     if (sedangDialog) {
       onOpen();
@@ -25,7 +27,7 @@ function PromptDialog({ prompt, sedangDialog, registerInput }) {
     >
       <ModalContent bg="transparent" shadow="search">
         <KotakInputPalet
-          label="Step... (contoh: masukkan bajet yang ingin dipakai...)"
+          label={labelKotakInput}
           value={inputan}
           onChange={(ev) => setInputan(ev.target.value)}
           onKeyDown={(ev) => {
