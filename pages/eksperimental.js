@@ -1,53 +1,9 @@
 import * as React from "react";
 import bajet from "../lib/api/bajet";
+import { prompt } from "../components/eksperimental/prompt";
 import { Box, Kbd } from "@chakra-ui/react";
 import { PaletPerintah } from "../components/eksperimental/palet-perintah";
 import { PromptDialog } from "../components/eksperimental/prompt-dialog";
-
-async function prompt(perintah) {
-  /**
-   * Step:
-   * 1. memproses multi step prompt
-   * 2. membuat request yang sebenarnya (misal, ke back end) pakai data
-   *    yang sudah dilengkapi user lewat prompt sebelumnya
-   *
-   * Pemrosesan perintah prompt dimulai dengan membaca array dialog
-   * lalu mencari item data pertama yang akan dipakai untuk menampilkan
-   * dialog prompt untuk dijawab user.
-   *
-   * Item pertama yang diambil itu nilainya pasti masih null.
-   *
-   * Tapi sebagai perhatian, ada kondisi dimana field-nya boleh dikosingi,
-   * atau tidak mandatory. Bagaimana caranya membedakan item yang field-nya
-   * tidak required/boleh dikosongi ini dengan item yang ingin kita cari
-   * sebenarnya?
-   */
-
-  const dialog = perintah.dialog.find(({ nilai }) => nilai === null);
-  if (dialog) {
-    return {
-      dialog,
-      pesan: "Perintah diproses. Menunggu prompt dialog...",
-    };
-  }
-
-  // TODO: mengeksekusi perintah yang sebenarnya ketika semua dialog prompt sudah terpenuhi
-  try {
-    // contoh: bikin request request ke backend untuk update data bajet di database
-    // const data = await fetch(...).then(res => res, error => throw new Error(error))
-    // return data
-
-    // Simulasi request API
-    const res = bajet.update({ nominal: 2000 });
-
-    return {
-      data: res,
-      pesan: "Perintah berhasil dijalankan.",
-    };
-  } catch (error) {
-    return Promise.reject("GAGAL!!!");
-  }
-}
 
 function PromptInteraktif({ page }) {
   const [perintahnya, setPerintah] = React.useState(null);
@@ -78,13 +34,11 @@ function PromptInteraktif({ page }) {
         } else {
           dispatch({ data: res.data, status: "berhasil" });
         }
-      }
-
-      // TODO: ketika rejek
+      },
       // error
-      // (error) => {
-      //   dispatch({ error, status: "gagal" });
-      // }
+      (error) => {
+        dispatch({ error, status: "gagal" });
+      }
     );
   }, [perintahnya]);
 
@@ -93,7 +47,6 @@ function PromptInteraktif({ page }) {
     if (!sedangBerhasil) {
       return;
     }
-
     page.aksi.setBajet(data);
     setPerintah(null);
   }, [sedangBerhasil]);
@@ -131,7 +84,7 @@ function PromptInteraktif({ page }) {
   console.log("status:", status);
   return (
     <div>
-      <PaletPerintah sedangQuery={true} registerPerintah={registerPerintah} />
+      <PaletPerintah paletTerbuka={true} registerPerintah={registerPerintah} />
       <PromptDialog
         sedangDialog={sedangDialog}
         prompt={{ data, cleanupPrompt }}

@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { KotakInputPalet } from "./palet-input";
 
-function PaletPerintah({ prompt, sedangQuery, registerPerintah }) {
+function PaletPerintah({ prompt, paletTerbuka, registerPerintah }) {
   const { onOpen, onClose, isOpen } = useDisclosure();
 
   // ... TODO: state Query cari perintah // const [querynya, setQuerynya] = React.useState("");
@@ -21,7 +21,8 @@ function PaletPerintah({ prompt, sedangQuery, registerPerintah }) {
   useEventListener("keydown", (ev) => {
     if (ev?.key?.toLowerCase() === "p" && ev["shiftKey"]) {
       // TODO: refaktor?
-      if (sedangQuery) {
+      // ...supaya gak terbuka ketika dialog masih terbuka.
+      if (paletTerbuka) {
         ev.preventDefault();
         onOpen();
       }
