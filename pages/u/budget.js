@@ -1,11 +1,9 @@
+import * as React from "react";
 import {
   Box,
   Center,
   chakra,
-  Container,
-  Flex,
   Heading,
-  Link,
   Table,
   TableCaption,
   Tbody,
@@ -16,80 +14,59 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import * as React from "react";
+import { LayoutHalaman } from "../../components/layout/layout-halaman";
+import { NavMenu } from "../../components/layout/nav";
 
 const rows = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"];
 
+function DisplayBulan(props) {
+  return (
+    <Box
+      className="display-bulan"
+      textTransform="uppercase"
+      fontSize="2xl"
+      color="gray.300"
+      {...props}
+    >
+      &larr; {props.children} &rarr;
+    </Box>
+  );
+}
+
+function DisplayBajet(props) {
+  return (
+    <Box
+      p="12"
+      mt="12"
+      // bgColor="whiteAlpha.500"
+      borderWidth="1px"
+      borderColor="gray.200"
+      borderRadius="sm"
+      // shadow="base"
+      fontSize="4xl"
+      fontWeight="bold"
+      color="gray.500"
+    >
+      <chakra.span fontWeight="normal" color="gray.300">
+        Rp
+      </chakra.span>{" "}
+      {props.children}
+      <chakra.span fontWeight="normal" color="gray.300">
+        ,00
+      </chakra.span>
+    </Box>
+  );
+}
+
 export default function HalamanBudget() {
   return (
-    <Box className="screen" bgColor="gray.100" h="100%">
-      <Center
-        as="header"
-        justifyContent="space-between"
-        h="14"
-        px="16"
-        borderWidth="1px"
-        borderColor="gray.200"
-        color="gray.400"
-      >
-        <Box className="logo">
-          <Link>WKWK</Link>
-        </Box>
-        <Box className="menu">
-          <Link>pengaturan &darr;</Link>
-        </Box>
-      </Center>
-
+    <LayoutHalaman>
       <Box pos="relative">
-        <Flex
-          pos="absolute"
-          top="12"
-          left="16"
-          flexDir="column"
-          // pr="6"
-          fontSize="sm"
-          textTransform="uppercase"
-          color="gray.400"
-          // borderRightWidth="1px"
-          // borderRightColor="gray.200"
-        >
-          <Link>&rarr; Bajet</Link>
-          <Link mt="1">&rarr; Pengeluaran</Link>
-          <Link mt="1">&rarr; Biaya</Link>
-          <Link mt="1">&rarr; Akun</Link>
-        </Flex>
-        <Center flexDirection="column">
-          <Box
-            className="display-bulan"
-            mt="12"
-            textTransform="uppercase"
-            fontSize="2xl"
-            color="gray.300"
-          >
-            &larr; November &rarr;
-          </Box>
+        <NavMenu pos="absolute" />
 
-          <Box
-            // mt="48px"
-            p="12"
-            mt="12"
-            // bgColor="whiteAlpha.500"
-            borderWidth="1px"
-            borderColor="gray.200"
-            borderRadius="sm"
-            // shadow="base"
-            fontSize="4xl"
-            fontWeight="bold"
-            color="gray.500"
-          >
-            <chakra.span fontWeight="normal" color="gray.300">
-              Rp
-            </chakra.span>{" "}
-            4.500.000
-            <chakra.span fontWeight="normal" color="gray.300">
-              ,00
-            </chakra.span>
-          </Box>
+        <Center flexDirection="column">
+          <DisplayBulan mt="12">November</DisplayBulan>
+          <DisplayBajet>4.500.000</DisplayBajet>
         </Center>
 
         <Box
@@ -180,6 +157,6 @@ export default function HalamanBudget() {
           <a href="https://dev.sakitkepala.dev">sakitkepala.dev</a>
         </Center>
       </Box>
-    </Box>
+    </LayoutHalaman>
   );
 }
