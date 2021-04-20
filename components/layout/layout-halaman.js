@@ -5,9 +5,6 @@ function LayoutHalaman(props) {
   return (
     <Box className="screen" bgColor="gray.100" minH="100vh">
       <NavBar />
-      <Box pos="relative">
-        <NavMenu pos="absolute" />
-      </Box>
 
       {/* Page */}
       {props.children}

@@ -1,43 +1,10 @@
 import NextLink from "next/link";
 import { Box, Center, Flex, Link as ChakraLink } from "@chakra-ui/layout";
-
-function Link({ href, children, ...props }) {
-  if (!href) {
-    return <ChakraLink {...props}>{children}</ChakraLink>;
-  }
-  return (
-    <NextLink href={href}>
-      <ChakraLink {...props}>{children}</ChakraLink>
-    </NextLink>
-  );
-}
-
-function NavBar(props) {
-  const borderBawah = !props.borderBawah
-    ? {}
-    : {
-        borderWidth: "1px",
-        borderColor: "gray.200",
-      };
-
-  return (
-    <Center
-      as="header"
-      justifyContent="space-between"
-      h="14"
-      px="16"
-      color="gray.400"
-      {...borderBawah}
-    >
-      <Box className="logo">
-        <Link href="/u/dashboard">WKWK</Link>
-      </Box>
-      <Box className="menu">
-        <Link>pengaturan &darr;</Link>
-      </Box>
-    </Center>
-  );
-}
+import {
+  SettingsIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@chakra-ui/icons";
 
 const linkNavigasi = [
   {
@@ -50,27 +17,59 @@ const linkNavigasi = [
   },
 ];
 
+function Link({ href, children, ...props }) {
+  if (!href) {
+    return <ChakraLink {...props}>{children}</ChakraLink>;
+  }
+  return (
+    <NextLink href={href}>
+      <ChakraLink {...props}>{children}</ChakraLink>
+    </NextLink>
+  );
+}
+
+function NavBar() {
+  return (
+    <Center
+      as="header"
+      justifyContent="space-between"
+      h="14"
+      px="16"
+      color="gray.400"
+    >
+      <Flex className="logo">
+        <Link href="/u/dashboard">
+          <TriangleDownIcon />
+          <TriangleUpIcon />
+        </Link>
+      </Flex>
+      <NavMenu />
+
+      <Box className="menu">
+        <Link>
+          <SettingsIcon /> &darr;
+        </Link>
+      </Box>
+    </Center>
+  );
+}
+
 function NavMenu(props) {
   return (
     <Flex
       className="nav-menu-list"
       top="12"
       left="16"
-      flexDir="column"
-      // pr="6"
       fontSize="sm"
       textTransform="uppercase"
       color="gray.400"
       {...props}
     >
-      {linkNavigasi.map(({ href, teks }, i) => {
-        const mt = i > 0 ? { mt: 1 } : {};
-        return (
-          <Link {...mt} href={href}>
-            &rarr; {teks}
-          </Link>
-        );
-      })}
+      {linkNavigasi.map(({ href, teks }, i) => (
+        <Link key={href} href={href} mx="4">
+          {teks} &rarr;
+        </Link>
+      ))}
     </Flex>
   );
 }
