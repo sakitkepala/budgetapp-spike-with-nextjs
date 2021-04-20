@@ -15,7 +15,6 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { LayoutHalaman } from "../../components/layout/layout-halaman";
-import { NavMenu } from "../../components/layout/nav";
 
 const rows = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"];
 
@@ -61,23 +60,27 @@ function DisplayBajet(props) {
 export default function HalamanBudget() {
   return (
     <LayoutHalaman>
-      <Box pos="relative">
-        <NavMenu pos="absolute" />
-
+      <Box>
         <Center flexDirection="column">
           <DisplayBulan mt="12">November</DisplayBulan>
           <DisplayBajet>4.500.000</DisplayBajet>
         </Center>
 
         <Box
-          as="main"
           display="flex"
           flexDirection="row-reverse"
           w="full"
           mt="72px"
           px="16"
         >
-          <Box className="info" w="40%" px="40px" py="12px" color="gray.500">
+          <Box
+            as="aside"
+            className="info"
+            w="40%"
+            px="40px"
+            py="12px"
+            color="gray.500"
+          >
             <Heading as="h2" size="md">
               Info Bajet
             </Heading>
@@ -107,7 +110,14 @@ export default function HalamanBudget() {
             </Table>
           </Box>
 
-          <Box w="100%" p="4" borderRadius="md" shadow="base" bgColor="white">
+          <Box
+            as="main"
+            w="100%"
+            p="4"
+            borderRadius="md"
+            shadow="base"
+            bgColor="white"
+          >
             <Table variant="simple" size="sm">
               <TableCaption>Imperial to metric conversion factors</TableCaption>
               <Thead>
@@ -148,14 +158,6 @@ export default function HalamanBudget() {
             </Table>
           </Box>
         </Box>
-      </Box>
-
-      {/* Footer */}
-      <Box p="40px" color="gray.500">
-        <Center>
-          2021 &copy;&nbsp;
-          <a href="https://dev.sakitkepala.dev">sakitkepala.dev</a>
-        </Center>
       </Box>
     </LayoutHalaman>
   );

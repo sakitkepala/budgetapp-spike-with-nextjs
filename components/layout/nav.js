@@ -1,18 +1,36 @@
-import { Box, Center, Flex, Link } from "@chakra-ui/layout";
+import NextLink from "next/link";
+import { Box, Center, Flex, Link as ChakraLink } from "@chakra-ui/layout";
 
-function NavBar() {
+function Link({ href, children, ...props }) {
+  if (!href) {
+    return <ChakraLink {...props}>{children}</ChakraLink>;
+  }
+  return (
+    <NextLink href={href}>
+      <ChakraLink {...props}>{children}</ChakraLink>
+    </NextLink>
+  );
+}
+
+function NavBar(props) {
+  const borderBawah = !props.borderBawah
+    ? {}
+    : {
+        borderWidth: "1px",
+        borderColor: "gray.200",
+      };
+
   return (
     <Center
       as="header"
       justifyContent="space-between"
       h="14"
       px="16"
-      // borderWidth="1px"
-      // borderColor="gray.200"
       color="gray.400"
+      {...borderBawah}
     >
       <Box className="logo">
-        <Link>WKWK</Link>
+        <Link href="/u/dashboard">WKWK</Link>
       </Box>
       <Box className="menu">
         <Link>pengaturan &darr;</Link>
@@ -20,6 +38,17 @@ function NavBar() {
     </Center>
   );
 }
+
+const linkNavigasi = [
+  {
+    href: "/u/budget",
+    teks: "Bajet",
+  },
+  {
+    href: "/u/dlsb",
+    teks: "Dan lain sebagainya...",
+  },
+];
 
 function NavMenu(props) {
   return (
@@ -32,14 +61,16 @@ function NavMenu(props) {
       fontSize="sm"
       textTransform="uppercase"
       color="gray.400"
-      // borderRightWidth="1px"
-      // borderRightColor="gray.200"
       {...props}
     >
-      <Link>&rarr; Bajet</Link>
-      <Link mt="1">&rarr; Pengeluaran</Link>
-      <Link mt="1">&rarr; Biaya</Link>
-      <Link mt="1">&rarr; Akun</Link>
+      {linkNavigasi.map(({ href, teks }, i) => {
+        const mt = i > 0 ? { mt: 1 } : {};
+        return (
+          <Link {...mt} href={href}>
+            &rarr; {teks}
+          </Link>
+        );
+      })}
     </Flex>
   );
 }
