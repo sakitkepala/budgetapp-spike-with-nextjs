@@ -6,16 +6,13 @@ import {
   chakra,
   Heading,
   Table,
-  TableCaption,
   Tbody,
   Td,
   Text,
-  Tfoot,
-  Th,
-  Thead,
   Tr,
 } from "@chakra-ui/react";
 import { LayoutHalaman } from "../../components/layout/layout-halaman";
+import { TablePakaiGrup } from "../../components/table";
 
 function DisplayBulan(props) {
   return (
@@ -121,33 +118,7 @@ export default function HalamanBudget() {
             shadow="base"
             bgColor="white"
           >
-            <Table variant="simple" size="sm">
-              <Thead>
-                <Tr>
-                  <Th>Kategori</Th>
-                  <Th isNumeric>Dianggarkan</Th>
-                  <Th isNumeric>Dipakai</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {kategori.data.map((kategori) => (
-                  <React.Fragment key={kategori.id}>
-                    <Tr>
-                      <Td>{kategori.nama}</Td>
-                      <Td isNumeric>{kategori.nominal}</Td>
-                      <Td isNumeric></Td>
-                    </Tr>
-                    <Tr>
-                      <Td>&rarr; {pengeluaran.data[kategori.id - 1].nama}</Td>
-                      <Td isNumeric></Td>
-                      <Td isNumeric>
-                        {pengeluaran.data[kategori.id - 1].biaya}
-                      </Td>
-                    </Tr>
-                  </React.Fragment>
-                ))}
-              </Tbody>
-            </Table>
+            <TablePakaiGrup data={{ kategori, pengeluaran }} />
           </Box>
         </Box>
       </Box>
