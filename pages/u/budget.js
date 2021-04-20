@@ -1,4 +1,5 @@
 import * as React from "react";
+import data from "../../lib/mock-data";
 import {
   Box,
   Center,
@@ -15,8 +16,6 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { LayoutHalaman } from "../../components/layout/layout-halaman";
-
-const rows = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"];
 
 function DisplayBulan(props) {
   return (
@@ -58,12 +57,16 @@ function DisplayBajet(props) {
 }
 
 export default function HalamanBudget() {
+  const [budget] = React.useState(data.budget);
+  const [kategori] = React.useState(data.kategoriPengeluaran);
+  const [pengeluaran] = React.useState(data.pengeluaran);
+
   return (
     <LayoutHalaman>
       <Box>
         <Center flexDirection="column">
           <DisplayBulan mt="12">November</DisplayBulan>
-          <DisplayBajet>4.500.000</DisplayBajet>
+          <DisplayBajet>{budget.data.nominal}</DisplayBajet>
         </Center>
 
         <Box
@@ -82,22 +85,22 @@ export default function HalamanBudget() {
             color="gray.500"
           >
             <Heading as="h2" size="md">
-              Info Bajet
+              {kategori.data[0].nama}
             </Heading>
-            <Text mt="1em">Deskripsi info bajet.</Text>
+            <Text mt="1em">{kategori.data[0].nama}</Text>
 
             <Table variant="simple" size="sm" colorScheme="gray" mt="1em">
               <Tbody>
                 <Tr>
                   <Td>Dianggarkan</Td>
                   <Td isNumeric align="right">
-                    Rp 500.000,00
+                    Rp {kategori.data[0].nominal},00
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Dibelanjakan</Td>
                   <Td isNumeric align="right">
-                    Rp 550.000,00
+                    Rp {pengeluaran.data[0].biaya},00
                   </Td>
                 </Tr>
                 <Tr>
@@ -119,42 +122,31 @@ export default function HalamanBudget() {
             bgColor="white"
           >
             <Table variant="simple" size="sm">
-              <TableCaption>Imperial to metric conversion factors</TableCaption>
               <Thead>
                 <Tr>
-                  <Th>Kategori Bajet</Th>
-                  <Th>into</Th>
-                  <Th isNumeric>multiply by</Th>
+                  <Th>Kategori</Th>
+                  <Th isNumeric>Dianggarkan</Th>
+                  <Th isNumeric>Dipakai</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {rows.map((rw) => (
-                  <React.Fragment key="rw">
+                {kategori.data.map((kategori) => (
+                  <React.Fragment key={kategori.id}>
                     <Tr>
-                      <Td>inches</Td>
-                      <Td>millimetres (mm)</Td>
-                      <Td isNumeric>25.4</Td>
+                      <Td>{kategori.nama}</Td>
+                      <Td isNumeric>{kategori.nominal}</Td>
+                      <Td isNumeric></Td>
                     </Tr>
                     <Tr>
-                      <Td>feet</Td>
-                      <Td>centimetres (cm)</Td>
-                      <Td isNumeric>30.48</Td>
-                    </Tr>
-                    <Tr>
-                      <Td>yards</Td>
-                      <Td>metres (m)</Td>
-                      <Td isNumeric>0.91444</Td>
+                      <Td>&rarr; {pengeluaran.data[kategori.id - 1].nama}</Td>
+                      <Td isNumeric></Td>
+                      <Td isNumeric>
+                        {pengeluaran.data[kategori.id - 1].biaya}
+                      </Td>
                     </Tr>
                   </React.Fragment>
                 ))}
               </Tbody>
-              <Tfoot>
-                <Tr>
-                  <Th>To convert</Th>
-                  <Th>into</Th>
-                  <Th isNumeric>multiply by</Th>
-                </Tr>
-              </Tfoot>
             </Table>
           </Box>
         </Box>
