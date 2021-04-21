@@ -12,7 +12,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { LayoutHalaman } from "../../components/layout/layout-halaman";
-import { TablePakaiGrup } from "../../components/table";
+import { TabelBudget } from "../../components/table";
 
 function DisplayBulan(props) {
   return (
@@ -110,16 +110,7 @@ export default function HalamanBudget() {
             </Table>
           </Box>
 
-          <Box
-            as="main"
-            w="100%"
-            p="4"
-            borderRadius="md"
-            shadow="base"
-            bgColor="white"
-          >
-            <TablePakaiGrup data={{ kategori, pengeluaran }} />
-          </Box>
+          <TabelBudget data={{ kategori, pengeluaran }} />
         </Box>
       </Box>
     </LayoutHalaman>
