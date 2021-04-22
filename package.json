@@ -10,6 +10,7 @@
     "test:once": "jest"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.11",
     "@chakra-ui/react": "^1.5.1",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
@@ -23,6 +24,11 @@
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
     "babel-jest": "^26.6.3",
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "match-sorter": "^6.3.0",
+    "msw": "^0.28.2"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }
