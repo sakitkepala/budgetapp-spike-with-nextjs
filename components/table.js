@@ -20,9 +20,7 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-function KomponenTable({ data }) {
-  const { kategori, pengeluaran } = data;
-
+function KomponenTable({ data = [] }) {
   const columns = React.useMemo(
     () => [
       {
@@ -42,7 +40,7 @@ function KomponenTable({ data }) {
       },
       {
         Header: "Kategori",
-        accessor: "pengeluaran",
+        accessor: "kategori",
       },
       {
         Header: "Dianggarkan",
@@ -50,58 +48,20 @@ function KomponenTable({ data }) {
         isNumeric: true,
       },
       {
-        Header: "Aktivitas",
-        accessor: "aktivitas",
+        Header: "Terpakai",
+        accessor: "terpakai",
         isNumeric: true,
       },
       {
-        Header: "Dana Siap",
-        accessor: "available",
+        Header: "Tersedia",
+        accessor: "tersedia",
         isNumeric: true,
       },
     ],
     []
   );
 
-  const dataTabel = React.useMemo(
-    () => [
-      {
-        pengeluaran: "Makan",
-        dianggarkan: 500000,
-        aktivitas: 50000,
-        available: 450000,
-        subRows: [
-          {
-            pengeluaran: "Matengan di warung",
-            dianggarkan: 300000,
-            aktivitas: 50000,
-            available: 250000,
-          },
-          {
-            pengeluaran: "Stok makanan",
-            dianggarkan: 200000,
-            aktivitas: 0,
-            available: 0,
-          },
-        ],
-      },
-      {
-        pengeluaran: "Transport",
-        dianggarkan: 100000,
-        aktivitas: 22000,
-        available: 78000,
-        subRows: [
-          {
-            pengeluaran: "Bensin Pertalite",
-            dianggarkan: 100000,
-            aktivitas: 22000,
-            available: 78000,
-          },
-        ],
-      },
-    ],
-    []
-  );
+  const datanyaTabel = React.useMemo(() => data, []);
 
   const {
     getTableProps,
@@ -110,7 +70,7 @@ function KomponenTable({ data }) {
     rows,
     prepareRow,
   } = useTable(
-    { data: dataTabel, columns },
+    { data: datanyaTabel, columns },
     useGroupBy,
     useExpanded,
     useRowSelect,
@@ -181,5 +141,42 @@ function TabelBudget({ data }) {
     </Box>
   );
 }
+
+const dataMock = [
+  {
+    kategori: "Makan",
+    dianggarkan: 500000,
+    terpakai: 50000,
+    tersedia: 450000,
+    subRows: [
+      {
+        kategori: "Matengan di warung",
+        dianggarkan: 300000,
+        terpakai: 50000,
+        tersedia: 250000,
+      },
+      {
+        kategori: "Stok makanan",
+        dianggarkan: 200000,
+        terpakai: 0,
+        tersedia: 0,
+      },
+    ],
+  },
+  {
+    kategori: "Transport",
+    dianggarkan: 100000,
+    terpakai: 22000,
+    tersedia: 78000,
+    subRows: [
+      {
+        kategori: "Bensin Pertalite",
+        dianggarkan: 100000,
+        terpakai: 22000,
+        tersedia: 78000,
+      },
+    ],
+  },
+];
 
 export { TabelBudget };

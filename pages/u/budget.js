@@ -1,5 +1,4 @@
 import * as React from "react";
-import data from "../../lib/mock-data";
 import {
   Box,
   Center,
@@ -54,16 +53,38 @@ function DisplayBajet(props) {
 }
 
 export default function HalamanBudget() {
-  const [budget] = React.useState(data.budget);
-  const [kategori] = React.useState(data.kategoriPengeluaran);
-  const [pengeluaran] = React.useState(data.pengeluaran);
+  const [budget, setBudget] = React.useState(null);
+  console.log("budget", budget);
+
+  React.useEffect(() => {
+    if (Boolean(budget)) {
+      return;
+    }
+
+    try {
+      // `fetch` returns Promise
+      const resBudget = fetch("/budget").then(async (respon) => {
+        const data = await respon.json();
+        if (respon.ok) {
+          return data;
+        } else {
+          return Promise.reject({ message: "tidak ok" });
+        }
+      });
+      resBudget.then((res) => {
+        setBudget(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   return (
     <LayoutHalaman>
       <Box>
         <Center flexDirection="column">
           <DisplayBulan mt="12">November</DisplayBulan>
-          <DisplayBajet>{budget.data.nominal}</DisplayBajet>
+          <DisplayBajet>{!budget ? null : budget.dianggarkan}</DisplayBajet>
         </Center>
 
         <Box
@@ -82,22 +103,22 @@ export default function HalamanBudget() {
             color="gray.500"
           >
             <Heading as="h2" size="md">
-              {kategori.data[0].nama}
+              {!budget ? "" : budget[0].kategori}
             </Heading>
-            <Text mt="1em">{kategori.data[0].nama}</Text>
+            <Text mt="1em">{!budget ? "" : budget[0].kategori}</Text>
 
             <Table variant="simple" size="sm" colorScheme="gray" mt="1em">
               <Tbody>
                 <Tr>
                   <Td>Dianggarkan</Td>
                   <Td isNumeric align="right">
-                    Rp {kategori.data[0].nominal},00
+                    Rp {!budget ? 0 : budget[0].dianggarkan},00
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Dibelanjakan</Td>
                   <Td isNumeric align="right">
-                    Rp {pengeluaran.data[0].biaya},00
+                    Rp {!budget ? 0 : budget[0].terpakai},00
                   </Td>
                 </Tr>
                 <Tr>
@@ -110,7 +131,7 @@ export default function HalamanBudget() {
             </Table>
           </Box>
 
-          <TabelBudget data={{ kategori, pengeluaran }} />
+          {!budget ? "Loading..." : <TabelBudget data={budget} />}
         </Box>
       </Box>
     </LayoutHalaman>
