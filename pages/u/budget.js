@@ -1,10 +1,17 @@
 import * as React from "react";
-import { Box, Flex, Text } from "@chakra-ui/layout";
+import { Box, Flex, Stack, Text } from "@chakra-ui/layout";
+import { Radio, RadioGroup } from "@chakra-ui/radio";
 import { LayoutHalaman } from "../../components/layout/layout-halaman";
 import { ManajemenBudget } from "../../components/screens/budget-management";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { Input } from "@chakra-ui/input";
 
 export default function HalamanBudget() {
   const [listAkun] = React.useState(null);
+
+  const [jenisAkun, setJenisAkun] = React.useState(null);
+  const [namaAkun, setNamaAkun] = React.useState("");
+  const [namaBankTerakhir, setBankTerakhir] = React.useState("");
 
   return (
     <LayoutHalaman>
@@ -14,7 +21,7 @@ export default function HalamanBudget() {
         <Flex flexDirection="column" alignItems="center" pt="24">
           <Text w="600px" color="gray.500">
             Hai! Kamu butuh akun dulu, nih, yang menyediakan dana sebelum bisa
-            budgeting. Akun bisa kamu tambahkan lewat form di bawah.
+            budgeting. Kamu bisa tambahkan akun lewat form di bawah.
           </Text>
 
           <Box
@@ -26,7 +33,49 @@ export default function HalamanBudget() {
             shadow="base"
             bgColor="white"
           >
-            Jenis akun: "Bank" | "Tunai"
+            <form>
+              <FormControl as="fieldset" isRequired>
+                <RadioGroup
+                  id="akun-jenis"
+                  name="akun-jenis"
+                  value={jenisAkun}
+                  onChange={(val) => {
+                    setJenisAkun(val);
+                    if (val === "tunai") {
+                      setNamaAkun("Tunai");
+                    } else {
+                      setNamaAkun(namaBankTerakhir);
+                    }
+                  }}
+                >
+                  <Stack direction="row">
+                    <Radio value="bank">Bank</Radio>
+                    <Radio value="tunai">Tunai</Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl as="fieldset">
+                <Input
+                  id="akun-nama"
+                  name="akun-nama"
+                  isDisabled={jenisAkun === "tunai"}
+                  variant={jenisAkun === "tunai" ? "filled" : "outline"}
+                  value={namaAkun}
+                  onChange={(ev) => {
+                    setNamaAkun(ev.target.value);
+                    if (jenisAkun === "bank") {
+                      setBankTerakhir(ev.target.value);
+                    }
+                  }}
+                  placeholder="misal... Jenius"
+                />
+              </FormControl>
+
+              <FormControl as="fieldset">
+                <Input id="akun-dana" name="akun-dana" placeholder="Rp ..." />
+              </FormControl>
+            </form>
           </Box>
         </Flex>
       )}
