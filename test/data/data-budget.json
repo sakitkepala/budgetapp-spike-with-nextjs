@@ -1,58 +1,12 @@
 [
   {
     "id": 1,
-    "kategori": "Bulanan Kos",
     "bulan": "November",
-    "dianggarkan": 0,
-    "tersedia": 0,
-    "terpakai": 0
+    "danaDianggarkan": 0
   },
   {
     "id": 2,
-    "kategori": "Matengan di warung",
-    "bulan": "November",
-    "dianggarkan": 0,
-    "tersedia": 0,
-    "terpakai": 0
-  },
-  {
-    "id": 3,
-    "kategori": "Makanan ringan",
-    "bulan": "November",
-    "dianggarkan": 0,
-    "tersedia": 0,
-    "terpakai": 0
-  },
-  {
-    "id": 4,
-    "kategori": "Bensin: Pertalite",
-    "bulan": "November",
-    "dianggarkan": 0,
-    "tersedia": 0,
-    "terpakai": 0
-  },
-  {
-    "id": 5,
-    "kategori": "Air minum galon",
-    "bulan": "November",
-    "dianggarkan": 0,
-    "tersedia": 0,
-    "terpakai": 0
-  },
-  {
-    "id": 6,
-    "kategori": "Kebutuhan rumah tangga",
-    "bulan": "November",
-    "dianggarkan": 0,
-    "tersedia": 0,
-    "terpakai": 0
-  },
-  {
-    "id": 7,
-    "kategori": "Makanan kucing",
-    "bulan": "November",
-    "dianggarkan": 0,
-    "tersedia": 0,
-    "terpakai": 0
+    "bulan": "Desember",
+    "danaDianggarkan": 0
   }
 ]

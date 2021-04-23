@@ -1,4 +1,5 @@
 import * as React from "react";
+import { client as apiClient } from "../../lib/utils";
 import {
   Box,
   Center,
@@ -54,7 +55,10 @@ function DisplayBajet(props) {
 
 export default function HalamanBudget() {
   const [budget, setBudget] = React.useState(null);
-  console.log("budget", budget);
+  const [budgetLines, setBudgetLines] = React.useState(null);
+
+  // dummy
+  const dataTerpakai = 0;
 
   React.useEffect(() => {
     if (Boolean(budget)) {
@@ -62,29 +66,42 @@ export default function HalamanBudget() {
     }
 
     try {
-      // `fetch` returns Promise
-      const resBudget = fetch("/budget").then(async (respon) => {
-        const data = await respon.json();
-        if (respon.ok) {
-          return data;
-        } else {
-          return Promise.reject({ message: "tidak ok" });
-        }
-      });
+      const resBudget = apiClient("/budget");
       resBudget.then((res) => {
         setBudget(res.data);
       });
     } catch (error) {
       console.log(error);
+      // TODO: handle state error
     }
-  }, []);
+  }, [budget]);
+
+  React.useEffect(() => {
+    if (Boolean(budgetLines) || !budget) {
+      return;
+    }
+
+    try {
+      const resLines = apiClient(`/budgetLine/${budget.bulan}`);
+      resLines.then((respon) => {
+        setBudgetLines(respon.data);
+      });
+    } catch (error) {
+      console.log(error);
+      // TODO: handle state error
+    }
+  }, [budget, budgetLines]);
 
   return (
     <LayoutHalaman>
       <Box>
         <Center flexDirection="column">
-          <DisplayBulan mt="12">November</DisplayBulan>
-          <DisplayBajet>{!budget ? null : budget.dianggarkan}</DisplayBajet>
+          <DisplayBulan mt="12">
+            {!budget ? "Bulan..." : budget.bulan}
+          </DisplayBulan>
+          <DisplayBajet>
+            {!budget ? null : budget.danaDianggarkan - dataTerpakai}
+          </DisplayBajet>
         </Center>
 
         <Box
@@ -103,35 +120,35 @@ export default function HalamanBudget() {
             color="gray.500"
           >
             <Heading as="h2" size="md">
-              {!budget ? "" : budget[0].kategori}
+              {!budgetLines ? "" : budgetLines[0].kategori}
             </Heading>
-            <Text mt="1em">{!budget ? "" : budget[0].kategori}</Text>
+            <Text mt="1em">{!budgetLines ? "" : budgetLines[0].kategori}</Text>
 
             <Table variant="simple" size="sm" colorScheme="gray" mt="1em">
               <Tbody>
                 <Tr>
                   <Td>Dianggarkan</Td>
                   <Td isNumeric align="right">
-                    Rp {!budget ? 0 : budget[0].dianggarkan},00
+                    Rp {!budgetLines ? 0 : budgetLines[0].dianggarkan},00
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Dibelanjakan</Td>
                   <Td isNumeric align="right">
-                    Rp {!budget ? 0 : budget[0].terpakai},00
+                    Rp {!budgetLines ? 0 : budgetLines[0].terpakai},00
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Tersisa</Td>
                   <Td isNumeric align="right">
-                    Rp -50.000,00
+                    Rp 0,00
                   </Td>
                 </Tr>
               </Tbody>
             </Table>
           </Box>
 
-          {!budget ? "Loading..." : <TabelBudget data={budget} />}
+          {!budgetLines ? "Loading..." : <TabelBudget data={budgetLines} />}
         </Box>
       </Box>
     </LayoutHalaman>
